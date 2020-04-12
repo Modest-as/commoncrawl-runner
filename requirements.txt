@@ -1,4 +1,4 @@
 boto3
-mrjob
-warc
-https://github.com/commoncrawl/gzipstream/archive/master.zip
+mrjob[aws]
+warc3-wet
+autopep8

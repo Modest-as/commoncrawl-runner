@@ -106,3 +106,5 @@ output/
 
 # Visual Studio Code configuration folder
 .vscode/
+
+src/

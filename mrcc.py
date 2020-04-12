@@ -17,13 +17,15 @@ from gzipstream import GzipStreamFile
 # Set up logging - must ensure that log_to_stream(...) is called only once
 # to avoid duplicate log messages (see https://github.com/Yelp/mrjob/issues/1551).
 LOG = logging.getLogger('CCJob')
-log_to_stream(format="%(asctime)s %(levelname)s %(name)s: %(message)s", name='CCJob')
+log_to_stream(
+    format="%(asctime)s %(levelname)s %(name)s: %(message)s", name='CCJob')
 
 
 class CCJob(MRJob):
     """
     A simple way to run MRJob jobs on Common Crawl data
     """
+
     def configure_args(self):
         super(CCJob, self).configure_args()
         self.pass_arg_through('--runner')
@@ -50,7 +52,7 @@ class CCJob(MRJob):
             boto_config = botocore.client.Config(
                 signature_version=botocore.UNSIGNED,
                 read_timeout=180,
-                retries={'max_attempts' : 20})
+                retries={'max_attempts': 20})
             s3client = boto3.client('s3', config=boto_config)
             # Verify bucket
             try:
