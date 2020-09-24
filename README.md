@@ -5,7 +5,7 @@ First, you'll need to get the relevant demo data locally, which can be done by r
 To run the jobs locally, you can simply run:
 
 ```
-python server_analysis.py --conf-path mrjob.conf --no-output --output-dir output/ input/test.wat
+python page_analysis.py --conf-path mrjob.conf --no-output --output-dir output/ input/test.wat
 ```
 
 ## Running via Elastic MapReduce
@@ -15,7 +15,7 @@ By default, the configuration file only launches two machines, both using spot i
 
 Using option two as shown above, you can then run the script on EMR by running:
 
-    python tag_counter_emr.py -r emr --conf-path mrjob.conf --no-output --output-dir s3://my-output-bucket/path/ input/test-100.warc
+    python page_analysis.py -r emr --conf-path mrjob.conf --no-output --output-dir s3://commoncrawl-runner/out/ input/test.wat
 
 this time reading 100 WARC files from Common Crawl's Public Data Set bucket `s3://commoncrawl/`. The output is written to S3 - do not forget to point the output (`s3://my-output-bucket/path/` is just a dummy) to a S3 bucket and path you have write permissions. The output directory must not exist!
 
@@ -31,3 +31,6 @@ You'll also want to place your results in an S3 bucket instead of having them st
 For full details on this, refer to the mrjob documentation.
 
 Note about locally buffering WARC/WAT/WET files: The default temp folder (set via hadoop.tmp.dir, default /tmp/) must be large enough to buffer content from S3 for all task running on a machine. You might point it explicitly to a directory on a volume large enough by passing `--s3_local_temp_dir=/path/to/tmp`.
+
+
+chmod -R a+rwx .

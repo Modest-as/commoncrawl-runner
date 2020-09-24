@@ -30,5 +30,5 @@
 		"ms-python.python"
 	],
 
-	"postCreateCommand": "pip3 install --user -r requirements.txt && pip3 install -e git+https://github.com/commoncrawl/gzipstream.git#egg=gzipstream"
+	"postCreateCommand": "pip3 install --user -r requirements.txt && pip3 install -e git+https://github.com/Modest-as/gzipstream.git#egg=gzipstream"
 }

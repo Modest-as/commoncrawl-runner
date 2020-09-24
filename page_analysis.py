@@ -1,18 +1,18 @@
+#!/usr/bin/python
+
+import json
 import gzip
 import logging
 import os.path as Path
-
-from tempfile import TemporaryFile
-
 import boto3
 import botocore
 import warc
 
+from urllib.parse import urlparse
+from tempfile import TemporaryFile
 from mrjob.job import MRJob
 from mrjob.util import log_to_stream
-
 from gzipstream import GzipStreamFile
-
 
 # Set up logging - must ensure that log_to_stream(...) is called only once
 # to avoid duplicate log messages (see https://github.com/Yelp/mrjob/issues/1551).
@@ -82,7 +82,7 @@ class CCJob(MRJob):
         else:
             line = Path.join(Path.abspath(Path.dirname(__file__)), line)
             LOG.info('Loading local file %s', line)
-            ccfile = warc.WARCFile(fileobj=gzip.open(line))
+            ccfile = warc.WARCFile(fileobj=GzipStreamFile(open(line, "rb")))
 
         for _i, record in enumerate(ccfile):
             for key, value in self.process_record(record):
@@ -107,3 +107,33 @@ class CCJob(MRJob):
         trying to do something more, you'll likely need to override this.
         """
         yield key, sum(values)
+
+
+class PageAnalysis(CCJob):
+    def parse_url(self, url):
+        data = urlparse(url)
+        return data.netloc
+
+    def process_record(self, record):
+        # We're only interested in the JSON responses
+        if record['Content-Type'] != 'application/json':
+            return
+
+        payload = record.payload.read()
+        data = json.loads(payload)
+
+        try:
+            metas = data['Envelope']['Payload-Metadata']['HTTP-Response-Metadata']['HTML-Metadata']['Head']['Metas']
+
+            for meta in metas:
+                if meta['name'] == 'viewport':
+                    yield self.parse_url(record.url), 1
+                    self.increment_counter('commoncrawl', 'pages_found', 1)
+        except KeyError:
+            pass
+
+        self.increment_counter('commoncrawl', 'processed_pages', 1)
+
+
+if __name__ == '__main__':
+    PageAnalysis.run()
