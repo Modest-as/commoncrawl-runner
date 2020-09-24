@@ -17,7 +17,11 @@ Using option two as shown above, you can then run the script on EMR by running:
 
     python page_analysis.py -r emr --conf-path mrjob.conf --no-output --output-dir s3://commoncrawl-runner/out/ input/test.wat
 
-this time reading 100 WARC files from Common Crawl's Public Data Set bucket `s3://commoncrawl/`. The output is written to S3 - do not forget to point the output (`s3://my-output-bucket/path/` is just a dummy) to a S3 bucket and path you have write permissions. The output directory must not exist!
+If you are running the cluster for the fist time set up default roles:
+
+```
+aws emr create-default-roles
+```
 
 ## Running it over all of Common Crawl
 
